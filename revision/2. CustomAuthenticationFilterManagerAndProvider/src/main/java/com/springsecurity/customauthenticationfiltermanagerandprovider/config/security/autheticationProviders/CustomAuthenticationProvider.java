@@ -19,7 +19,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         CustomAuthentication ca = (CustomAuthentication) authentication;
         String requestKey = ca.getKey();
 
-        if(requestKey.equals(key)) {
+        if(requestKey != null && requestKey.equals(key)) {
             return new CustomAuthentication(null, true);
         }
 
