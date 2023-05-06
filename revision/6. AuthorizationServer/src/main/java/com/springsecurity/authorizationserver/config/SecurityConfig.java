@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -36,6 +37,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
+import java.util.List;
 import java.util.UUID;
 
 // Get the code(from browser)(can change the code challenge(SHA256): http://localhost:8080/oauth2/authorize?response_type=code&client_id=client&scope=openid&redirect_uri=https://google.com/auth/test&code_challenge=QYPAZ5NU8yvtlQ9erXrUYR-T5AGCjCF47vN-KsaI2A8&code_challenge_method=S256
@@ -76,7 +78,11 @@ public class SecurityConfig {
                         .password(passwordEncoder().encode("anuj"))
                         .authorities("read")
                         .build();
-        return new InMemoryUserDetailsManager(user1);
+        var user2 = User.withUsername("ankit")
+                .password(passwordEncoder().encode("ankit"))
+                .authorities("write")
+                .build();
+        return new InMemoryUserDetailsManager(user1, user2);
     }
 
     @Bean
@@ -104,7 +110,7 @@ public class SecurityConfig {
                         TokenSettings.builder()
 //                                .accessTokenFormat(OAuth2TokenFormat.REFERENCE)      // for opaque token
 //                                .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED) // for JWT token(non opaque) (default)
-                                .accessTokenTimeToLive(Duration.ofSeconds(900))   // self-explanatory
+                                .accessTokenTimeToLive(Duration.ofMinutes(180))   // self-explanatory
                                 .build()
                 )
                 .build();
@@ -140,6 +146,9 @@ public class SecurityConfig {
     public OAuth2TokenCustomizer<JwtEncodingContext> oAuth2TokenCustomizer() {
         return context -> {
             context.getClaims().claim("test-param", "test-value");
+
+            List<GrantedAuthority> authorityList = (List<GrantedAuthority>) context.getPrincipal().getAuthorities();
+            context.getClaims().claim("authorities", authorityList.stream().map(GrantedAuthority::getAuthority).toList());
         };
     }
 }
