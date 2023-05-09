@@ -11,6 +11,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final CorsCustomizer corsCustomizer;
+
+    public SecurityConfig(CorsCustomizer corsCustomizer) {
+        this.corsCustomizer = corsCustomizer;
+    }
+
     @Value("${jwks.uri}")
     private String jwksUri;
 
@@ -22,6 +28,8 @@ public class SecurityConfig {
         );
 
         http.authorizeHttpRequests().anyRequest().authenticated();
+
+        corsCustomizer.corsCustomizer(http);
 
         return http.build();
     }

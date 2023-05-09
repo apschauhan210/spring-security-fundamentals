@@ -48,6 +48,12 @@ import java.util.UUID;
 @Configuration
 public class SecurityConfig {
 
+    private final CorsCustomizer corsCustomizer;
+
+    public SecurityConfig(CorsCustomizer corsCustomizer) {
+        this.corsCustomizer = corsCustomizer;
+    }
+
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -60,6 +66,8 @@ public class SecurityConfig {
             e.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"));
         });
 
+        corsCustomizer.corsCustomizer(http);
+
         return http.build();
     }
 
@@ -68,6 +76,8 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.formLogin(Customizer.withDefaults())
                 .authorizeHttpRequests().anyRequest().authenticated();
+
+        corsCustomizer.corsCustomizer(http);
 
         return http.build();
     }
@@ -103,7 +113,7 @@ public class SecurityConfig {
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
-                .redirectUri("https://google.com/auth/test")
+                .redirectUri("http://localhost:3000/auth/authorized")
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .tokenSettings(
