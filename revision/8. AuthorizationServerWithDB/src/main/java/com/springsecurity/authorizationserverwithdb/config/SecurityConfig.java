@@ -61,11 +61,23 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.formLogin(Customizer.withDefaults())
+        http
+                .formLogin(Customizer.withDefaults())
+//                .formLogin(e -> {                                 // custom login page
+//                    e.loginPage("/login");
+//                    e.loginProcessingUrl("/process-login");
+//                    e.defaultSuccessUrl("/", true);
+//                    e.failureUrl("/login.html?error=true");
+//                })
+//                .logout(e -> {                                    // custom logout handling
+//                    e.logoutUrl("/logout");
+//                    e.deleteCookies("JSESSIONID");
+//                    e.logoutSuccessUrl("/");
+//                })
                 .httpBasic()
                 .and()
                 .csrf().disable()
-                .authorizeHttpRequests().requestMatchers("/client/register/**", "/user/change_password").authenticated()
+                .authorizeHttpRequests().requestMatchers("/client/register/**", "/user/change_password", "/secured/**").authenticated()
                 .anyRequest().permitAll();
 
         return http.build();
