@@ -85,7 +85,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
             String username = currentUser.getName();
             User user = userRepository.findUserByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            if(passwordEncoder.encode(oldPassword).equals(user.getPassword())) {
+            if(passwordEncoder.matches(oldPassword, user.getPassword())) {
                 user.setPassword(passwordEncoder.encode(newPassword));
             } else {
                 throw new BadCredentialsException("Old password is wrong");

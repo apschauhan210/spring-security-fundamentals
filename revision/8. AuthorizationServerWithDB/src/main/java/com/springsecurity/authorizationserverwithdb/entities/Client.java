@@ -23,13 +23,13 @@ public class Client {
 
     private String secret;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> redirectUris;
 
     private String authenticationMethod;
 
     @ManyToMany(
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = CascadeType.PERSIST
     )
     @JoinTable(
@@ -40,7 +40,7 @@ public class Client {
     private Set<Scope> scopes;
 
     @ManyToMany(
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = CascadeType.PERSIST
     )
     @JoinTable(

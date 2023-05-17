@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
 import java.util.HashSet;
 import java.util.List;
@@ -61,5 +63,15 @@ public class SecurityClient extends RegisteredClient {
                 .stream()
                 .map(Scope::getName)
                 .collect(Collectors.toSet());
+    }
+
+    @Override
+    public ClientSettings getClientSettings() {
+        return ClientSettings.builder().build();
+    }
+
+    @Override
+    public TokenSettings getTokenSettings() {
+        return TokenSettings.builder().build();
     }
 }

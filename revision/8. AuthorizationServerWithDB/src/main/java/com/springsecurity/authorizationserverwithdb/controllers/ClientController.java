@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +25,8 @@ public class ClientController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity registerClient(@RequestBody Client client) {
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity registerClient(@RequestBody Client client, Authentication authentication) {
         client.setSecret(passwordEncoder.encode(client.getSecret()));
         SecurityClient securityClient = new SecurityClient(client);
         try {
